@@ -30,20 +30,24 @@ def play(players):
     turn = 0
     pile = []
     lastCard = None
-    winner = None
     noneCount = 0
     extraDraw = 0
 
-    while winner is not None:
+    while True:
+        # TODO: NEED TO CHECK IF THERE IS A WINNER HERE
+
         playSpeedSeed = players[turn].getPlaySpeed()
         nextCardTime = random.randint(MIN_TURN_TIME, MIN_TURN_TIME + playSpeedSeed)
 
         while not players[turn].hasCards():
             turn = (turn + 1) % len(players)
 
-        if extraDraw > 0:
-            card = players[turn].getNextCard()
+        card = players[turn].getNextCard()
+        pile.append(card)
 
+        # If player is on a face card, and needs to continue placing cards.
+        # Do not iterate turn unless player puts down another face card
+        if extraDraw > 0:
             if card == "A":
                 turn = (turn + 1) % len(players)
                 extraDraw = 4
@@ -57,21 +61,21 @@ def play(players):
                 turn = (turn + 1) % len(players)
                 extraDraw = 3
 
+            extraDraw = extraDraw - 1
+        # If player is not on a face card, iterate turn
+        else:
+            if card == "A":
+                extraDraw = 4
+            elif card == "J":
+                extraDraw = 1
+            elif card == "Q":
+                extraDraw = 2
+            elif card == "K":
+                extraDraw = 3
 
-        card = players[turn].getNextCard()
+            turn = (turn + 1) % len(players)
 
-        # Check win condition, everyone is None except for one player
-        if card is None:
-            noneCount = noneCount + 1
-            if noneCount == len(players) - 1:
-                winner = (turn + 1) % len(players)
-            continue
-
-        noneCount = 0
-        pile.append(card)
-
-
-
+        lastCard = card
 
 if __name__ == "__main__":
     PLAYERS = []
