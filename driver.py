@@ -2,6 +2,8 @@
 # Author: Teddy Ni
 # May 2019
 
+# Ruleset: We include sandwiches, but not double sandwiches
+
 from deck import Deck
 from player import Player
 
@@ -20,7 +22,7 @@ def initGame(players):
     for i in range(0, len(players)):
         players[i].addCards(hands[i])
 
-    play(players)
+    return play(players)
 
 def play(players):
     # Set constants
@@ -34,6 +36,7 @@ def play(players):
     playerInitExtraDraw = None
 
     while True:
+        # Check if we have a winner
         pLeft = 0
         aLeft = None
         for pIndex in range(0, len(players)):
@@ -42,17 +45,23 @@ def play(players):
                 aLeft = pIndex
 
         if pLeft == 1:
-            print("We have a winner: " + str(aLeft))
-            break
+            # print("We have a winner: " + str(aLeft))
+            return aLeft
 
-        playSpeedSeed = players[turn].getPlaySpeed()
-        nextCardTime = random.randint(MIN_TURN_TIME, MIN_TURN_TIME + playSpeedSeed)
+        # Simulate play speed vs slap speed
+        slapCond = checkSlapConditions(pile)
+        if slapCond:
+            # print("SLAP CONDITION")
+            playSpeedSeed = players[turn].getPlaySpeed()
+            nextCardTime = random.randint(MIN_TURN_TIME, MIN_TURN_TIME + playSpeedSeed)
+
+            #
 
         while not players[turn].hasCards():
             turn = (turn + 1) % len(players)
 
         card = players[turn].getNextCard()
-        print("Player " + str(turn) + ": " + str(card))
+        # print("Player " + str(turn) + ": " + str(card))
         pile.append(card)
 
         # If player is on a face card, and needs to continue placing cards.
@@ -79,7 +88,7 @@ def play(players):
 
             if extraDraw == 0:
                 players[playerInitExtraDraw].addCards(pile)
-                print("Player " + str(playerInitExtraDraw) + ": Wins the pile of " + str(len(pile)))
+                # print("Player " + str(playerInitExtraDraw) + ": Wins the pile of " + str(len(pile)))
                 pile = []
                 playerInitExtraDraw = None
         # If player is not on a face card, iterate turn
@@ -101,16 +110,51 @@ def play(players):
 
         lastCard = card
 
+def checkSlapConditions(pile):
+    if len(pile) <= 1:
+        return False
+
+    if pile[len(pile) - 1] == pile[len(pile) - 2]:
+        return True
+
+    if len(pile) > 2:
+        if pile[len(pile)-1] == pile[len(pile) - 3]:
+            return True
+
+    return False
+
+def runIterations(itr=1000000):
+    winnerScore = [0, 0, 0]
+    for i in range(0, itr):
+        print(i)
+        PLAYERS = []
+
+        PLAYER_ONE = Player()
+        PLAYERS.append(PLAYER_ONE)
+
+        PLAYER_TWO = Player()
+        PLAYERS.append(PLAYER_TWO)
+
+        PLAYER_THREE = Player()
+        PLAYERS.append(PLAYER_THREE)
+
+        winner = initGame(players=PLAYERS)
+        winnerScore[int(winner)] = winnerScore[int(winner)] + 1
+
+    print(winnerScore)
+
+
 if __name__ == "__main__":
-    PLAYERS = []
-
-    PLAYER_ONE = Player()
-    PLAYERS.append(PLAYER_ONE)
-
-    PLAYER_TWO = Player()
-    PLAYERS.append(PLAYER_TWO)
-
-    PLAYER_THREE = Player()
-    PLAYERS.append(PLAYER_THREE)
-
-    initGame(players=PLAYERS)
+    # PLAYERS = []
+    #
+    # PLAYER_ONE = Player()
+    # PLAYERS.append(PLAYER_ONE)
+    #
+    # PLAYER_TWO = Player()
+    # PLAYERS.append(PLAYER_TWO)
+    #
+    # PLAYER_THREE = Player()
+    # PLAYERS.append(PLAYER_THREE)
+    #
+    # initGame(players=PLAYERS)
+    runIterations()
