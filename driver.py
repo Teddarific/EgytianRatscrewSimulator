@@ -30,11 +30,20 @@ def play(players):
     turn = 0
     pile = []
     lastCard = None
-    noneCount = 0
     extraDraw = 0
+    playerInitExtraDraw = None
 
     while True:
-        # TODO: NEED TO CHECK IF THERE IS A WINNER HERE
+        pLeft = 0
+        aLeft = None
+        for pIndex in range(0, len(players)):
+            if players[pIndex].hasCards():
+                pLeft = pLeft + 1
+                aLeft = pIndex
+
+        if pLeft == 1:
+            print("We have a winner: " + str(aLeft))
+            break
 
         playSpeedSeed = players[turn].getPlaySpeed()
         nextCardTime = random.randint(MIN_TURN_TIME, MIN_TURN_TIME + playSpeedSeed)
@@ -43,34 +52,49 @@ def play(players):
             turn = (turn + 1) % len(players)
 
         card = players[turn].getNextCard()
+        print("Player " + str(turn) + ": " + str(card))
         pile.append(card)
 
         # If player is on a face card, and needs to continue placing cards.
         # Do not iterate turn unless player puts down another face card
         if extraDraw > 0:
             if card == "A":
+                playerInitExtraDraw = turn
                 turn = (turn + 1) % len(players)
                 extraDraw = 4
             elif card == "J":
+                playerInitExtraDraw = turn
                 turn = (turn + 1) % len(players)
                 extraDraw = 1
             elif card == "Q":
+                playerInitExtraDraw = turn
                 turn = (turn + 1) % len(players)
                 extraDraw = 2
             elif card == "K":
+                playerInitExtraDraw = turn
                 turn = (turn + 1) % len(players)
                 extraDraw = 3
+            else:
+                extraDraw = extraDraw - 1
 
-            extraDraw = extraDraw - 1
+            if extraDraw == 0:
+                players[playerInitExtraDraw].addCards(pile)
+                print("Player " + str(playerInitExtraDraw) + ": Wins the pile of " + str(len(pile)))
+                pile = []
+                playerInitExtraDraw = None
         # If player is not on a face card, iterate turn
         else:
             if card == "A":
+                playerInitExtraDraw = turn
                 extraDraw = 4
             elif card == "J":
+                playerInitExtraDraw = turn
                 extraDraw = 1
             elif card == "Q":
+                playerInitExtraDraw = turn
                 extraDraw = 2
             elif card == "K":
+                playerInitExtraDraw = turn
                 extraDraw = 3
 
             turn = (turn + 1) % len(players)

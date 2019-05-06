@@ -17,4 +17,4 @@ class Player:
         return self.playSpeed
 
     def hasCards(self):
-        return len(self.cards) == 0
+        return len(self.cards) > 0
