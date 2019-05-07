@@ -52,8 +52,22 @@ def play(players):
         slapCond = checkSlapConditions(pile)
         if slapCond:
             # print("SLAP CONDITION")
-            playSpeedSeed = players[turn].getPlaySpeed()
+            #playSpeedSeed = players[turn].getPlaySpeed()
             nextCardTime = random.randint(MIN_TURN_TIME, MIN_TURN_TIME + playSpeedSeed)
+
+            slaparray = []
+            for player in players:
+                slaparray.append(player.getPlaySpeed())
+
+            gen = np.random.uniform(0,np.sum(slaparray))
+
+            if gen < slaparray[0]:
+                #player1 wins
+                print("player1 wins")
+            elif gen < slaparray[1]:
+                print("player2 wins")
+            else:
+                print("player3 wins")
 
             #
 
