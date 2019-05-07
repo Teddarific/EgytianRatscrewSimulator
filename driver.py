@@ -8,6 +8,7 @@ from deck import Deck
 from player import Player
 
 import random
+import numpy as np
 
 def initGame(players):
     # Initialize the cards, and shuffle
@@ -53,14 +54,17 @@ def play(players):
         if slapCond:
             # print("SLAP CONDITION")
             #playSpeedSeed = players[turn].getPlaySpeed()
-            nextCardTime = random.randint(MIN_TURN_TIME, MIN_TURN_TIME + playSpeedSeed)
+            #nextCardTime = random.randint(MIN_TURN_TIME, MIN_TURN_TIME + playSpeedSeed)
 
+            #Get all the slap times for the players
             slaparray = []
             for player in players:
                 slaparray.append(player.getPlaySpeed())
 
+            # Generate a random number between the slap times
             gen = np.random.uniform(0,np.sum(slaparray))
 
+            # You win proportionally with your slapping speed
             if gen < slaparray[0]:
                 #player1 wins
                 print("player1 wins")
@@ -69,7 +73,12 @@ def play(players):
             else:
                 print("player3 wins")
 
-            #
+            # TODO player wins the cards and it is his turn
+            # Is this right?
+            players[playerInitExtraDraw].addCards(pile)
+            # print("Player " + str(playerInitExtraDraw) + ": Wins the pile of " + str(len(pile)))
+            pile = []
+            playerInitExtraDraw = None
 
         while not players[turn].hasCards():
             turn = (turn + 1) % len(players)
@@ -137,7 +146,7 @@ def checkSlapConditions(pile):
 
     return False
 
-def runIterations(itr=1000000):
+def runIterations(itr=1000):
     winnerScore = [0, 0, 0]
     for i in range(0, itr):
         print(i)
