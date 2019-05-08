@@ -79,6 +79,7 @@ def play(players):
             # print("Player " + str(playerInitExtraDraw) + ": Wins the pile of " + str(len(pile)))
             pile = []
             playerInitExtraDraw = None
+            extraDraw = 0
 
         while not players[turn].hasCards():
             turn = (turn + 1) % len(players)
@@ -109,7 +110,7 @@ def play(players):
             else:
                 extraDraw = extraDraw - 1
 
-            if extraDraw == 0 and playerInitExtraDraw is not None:
+            if extraDraw == 0:
                 players[playerInitExtraDraw].addCards(pile)
                 # print("Player " + str(playerInitExtraDraw) + ": Wins the pile of " + str(len(pile)))
                 pile = []
