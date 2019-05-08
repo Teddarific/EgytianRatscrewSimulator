@@ -11,7 +11,7 @@ import time
 import random
 import numpy as np
 
-VERBOSE = True
+VERBOSE = False
 LIVE = False
 
 def sp(player, text):
@@ -69,25 +69,21 @@ def play(players):
         currPlayTime = players[turn].getPlayTime()
         if slapCond:
             #Get all the slap times for the players
-            slapTimes = []
-            for player in players:
-                slapTimes.append(player.getSlapTime())
+            minTime = 1000000000
+            minPlayer = None
+            for pIndex in range(0, len(players)):
+                t = players[pIndex].getSlapTime()
+                if t < 0:
+                    print(pIndex)
+                if t < minTime:
+                    minTime = t
+                    minPlayer = pIndex
 
-            slapTimes.append(currPlayTime)
+            if currPlayTime > minTime:
+                cw(minTime)
+                sp(minPlayer, "Gets the slap! Wins the pile of " + str(len(pile)))
 
-            # Generate a random number between the slap times
-            gen = np.random.uniform(0,np.sum(slapTimes))
-
-            for i in range(0, len(slapTimes)):
-                if gen < slapTimes[i]:
-                    break
-
-            if i < len(slapTimes) - 1:
-                cw(slapTimes[i])
-                sp(i, "Gets the slap! Wins the pile of " + str(len(pile)))
-
-                players[turn].addCards(pile)
-                # print("Player " + str(playerInitExtraDraw) + ": Wins the pile of " + str(len(pile)))
+                players[minPlayer].addCards(pile)
                 pile = []
                 playerInitExtraDraw = None
                 extraDraw = 0
@@ -171,7 +167,7 @@ def runIterations(itr=1000):
         PLAYER_TWO = Player()
         PLAYERS.append(PLAYER_TWO)
 
-        PLAYER_THREE = Player()
+        PLAYER_THREE = Player(sd=1, slapSpeed=3)
         PLAYERS.append(PLAYER_THREE)
 
         winner = initGame(players=PLAYERS)
@@ -193,4 +189,4 @@ if __name__ == "__main__":
     # PLAYERS.append(PLAYER_THREE)
     #
     # initGame(players=PLAYERS)
-    runIterations(itr=1)
+    runIterations(itr=1000)

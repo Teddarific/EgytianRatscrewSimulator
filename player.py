@@ -23,10 +23,10 @@ class Player:
         self.cards = self.cards + cards
 
     def getPlayTime(self):
-        return np.random.normal(self.playSpeed, self.sd)
+        return abs(np.random.normal(self.playSpeed, self.sd))
 
     def getSlapTime(self):
-        return np.random.normal(self.slapSpeed, self.sd)
+        return abs(np.random.normal(self.slapSpeed, self.sd))
 
     def hasCards(self):
         return len(self.cards) > 0
