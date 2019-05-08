@@ -125,6 +125,7 @@ def play(players):
                 # print("Player " + str(playerInitExtraDraw) + ": Wins the pile of " + str(len(pile)))
                 sp(playerInitExtraDraw, "Wins the pile of " + str(len(pile)))
                 pile = []
+                turn = playerInitExtraDraw
                 playerInitExtraDraw = None
         # If player is not on a face card, iterate turn
         else:
