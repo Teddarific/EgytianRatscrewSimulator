@@ -75,7 +75,7 @@ def play(players):
 
             # TODO player wins the cards and it is his turn
             # Is this right?
-            players[playerInitExtraDraw].addCards(pile)
+            players[turn].addCards(pile)
             # print("Player " + str(playerInitExtraDraw) + ": Wins the pile of " + str(len(pile)))
             pile = []
             playerInitExtraDraw = None
@@ -109,7 +109,7 @@ def play(players):
             else:
                 extraDraw = extraDraw - 1
 
-            if extraDraw == 0:
+            if extraDraw == 0 and playerInitExtraDraw is not None:
                 players[playerInitExtraDraw].addCards(pile)
                 # print("Player " + str(playerInitExtraDraw) + ": Wins the pile of " + str(len(pile)))
                 pile = []
