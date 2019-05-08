@@ -7,8 +7,20 @@
 from deck import Deck
 from player import Player
 
+import time
 import random
 import numpy as np
+
+VERBOSE = True
+LIVE = False
+
+def sp(player, text):
+    if VERBOSE:
+        print("Player " + str(player) + ": " + text)
+
+def cw(delay):
+    if LIVE:
+        time.sleep(delay / 10)
 
 def initGame(players):
     # Initialize the cards, and shuffle
@@ -49,43 +61,41 @@ def play(players):
             # print("We have a winner: " + str(aLeft))
             return aLeft
 
-        # Simulate play speed vs slap speed
-        slapCond = checkSlapConditions(pile)
-        if slapCond:
-            # print("SLAP CONDITION")
-            #playSpeedSeed = players[turn].getPlaySpeed()
-            #nextCardTime = random.randint(MIN_TURN_TIME, MIN_TURN_TIME + playSpeedSeed)
-
-            #Get all the slap times for the players
-            slaparray = []
-            for player in players:
-                slaparray.append(player.getPlaySpeed())
-
-            # Generate a random number between the slap times
-            gen = np.random.uniform(0,np.sum(slaparray))
-
-            # You win proportionally with your slapping speed
-            if gen < slaparray[0]:
-                #player1 wins
-                print("player1 wins")
-            elif gen < slaparray[1]:
-                print("player2 wins")
-            else:
-                print("player3 wins")
-
-            # TODO player wins the cards and it is his turn
-            # Is this right?
-            players[turn].addCards(pile)
-            # print("Player " + str(playerInitExtraDraw) + ": Wins the pile of " + str(len(pile)))
-            pile = []
-            playerInitExtraDraw = None
-            extraDraw = 0
-
         while not players[turn].hasCards():
             turn = (turn + 1) % len(players)
 
+        # Simulate play speed vs slap speed
+        slapCond = checkSlapConditions(pile)
+        currPlayTime = players[turn].getPlayTime()
+        if slapCond:
+            #Get all the slap times for the players
+            slapTimes = []
+            for player in players:
+                slapTimes.append(player.getSlapTime())
+
+            slapTimes.append(currPlayTime)
+
+            # Generate a random number between the slap times
+            gen = np.random.uniform(0,np.sum(slapTimes))
+
+            for i in range(0, len(slapTimes)):
+                if gen < slapTimes[i]:
+                    break
+
+            if i < len(slapTimes) - 1:
+                cw(slapTimes[i])
+                sp(i, "Gets the slap! Wins the pile of " + str(len(pile)))
+
+                players[turn].addCards(pile)
+                # print("Player " + str(playerInitExtraDraw) + ": Wins the pile of " + str(len(pile)))
+                pile = []
+                playerInitExtraDraw = None
+                extraDraw = 0
+                continue
+
+        cw(currPlayTime)
         card = players[turn].getNextCard()
-        # print("Player " + str(turn) + ": " + str(card))
+        sp(turn, str(card))
         pile.append(card)
 
         # If player is on a face card, and needs to continue placing cards.
@@ -113,6 +123,7 @@ def play(players):
             if extraDraw == 0:
                 players[playerInitExtraDraw].addCards(pile)
                 # print("Player " + str(playerInitExtraDraw) + ": Wins the pile of " + str(len(pile)))
+                sp(playerInitExtraDraw, "Wins the pile of " + str(len(pile)))
                 pile = []
                 playerInitExtraDraw = None
         # If player is not on a face card, iterate turn
@@ -181,4 +192,4 @@ if __name__ == "__main__":
     # PLAYERS.append(PLAYER_THREE)
     #
     # initGame(players=PLAYERS)
-    runIterations()
+    runIterations(itr=1)

@@ -2,13 +2,15 @@ import numpy as np
 
 
 class Player:
-    def __init__(self, playSpeed=5):
+    def __init__(self, sd=2, playSpeed=5, slapSpeed=5):
         self.cards = []
         #self.playSpeed = playSpeed
+        self.sd = sd
+        self.playSpeed = playSpeed
+        self.slapSpeed = slapSpeed
 
-        # Normally distributed around playSpeed, standard deviation = 2
-        sd = 2
-        self.playSpeed = np.random.normal(playSpeed,sd)
+        self.playSpeed = np.random.normal(playSpeed, sd)
+        self.slapSpeed = np.random.normal(slapSpeed,sd)
 
     def getNextCard(self):
         if len(self.cards) == 0:
@@ -20,8 +22,11 @@ class Player:
     def addCards(self, cards):
         self.cards = self.cards + cards
 
-    def getPlaySpeed(self):
-        return self.playSpeed
+    def getPlayTime(self):
+        return np.random.normal(self.playSpeed, self.sd)
+
+    def getSlapTime(self):
+        return np.random.normal(self.slapSpeed, self.sd)
 
     def hasCards(self):
         return len(self.cards) > 0
